@@ -31,29 +31,34 @@ def decode_binary(binary_string):
 
 # Fungsi untuk mendecode script secara otomatis
 def auto_decode(encoded_code):
+    results = {}  # Menyimpan hasil decode tiap lapisan
     layers = 0  # Menghitung jumlah lapisan
+
     while True:
         if is_base64(encoded_code):  # Jika encoded_code adalah Base64
             try:
                 encoded_code = base64.b64decode(encoded_code).decode('utf-8')
                 layers += 1
+                results[f"dec_layer_{layers}"] = encoded_code
             except Exception:
                 break
         elif is_hex(encoded_code):  # Jika encoded_code adalah Hexadecimal
             try:
                 encoded_code = bytes.fromhex(encoded_code).decode('utf-8')
                 layers += 1
+                results[f"dec_layer_{layers}"] = encoded_code
             except Exception:
                 break
         elif is_binary(encoded_code):  # Jika encoded_code adalah Binary
             try:
                 encoded_code = decode_binary(encoded_code)
                 layers += 1
+                results[f"dec_layer_{layers}"] = encoded_code
             except Exception:
                 break
         else:
             break  # Berhenti jika tidak bisa didecode lebih lanjut
-    return encoded_code, layers
+    return results, layers
 
 # Contoh penggunaan
 if __name__ == "__main__":
@@ -61,12 +66,9 @@ if __name__ == "__main__":
     encoded_script = input("Masukkan script hasil encoding: ")
 
     # Proses decoding
-    decoded_script, total_layers = auto_decode(encoded_script)
+    results, total_layers = auto_decode(encoded_script)
 
     # Tampilkan hasil
     print(f"Script berhasil didecode dengan {total_layers} lapisan.")
-    print("Script asli (hasil decode):")
-    print(decoded_script)
-
-    # Simpan hasil ke variabel input awal
-    encoded_script = decoded_script
+    for layer, result in results.items():
+        print(f"{layer}: {result}")
